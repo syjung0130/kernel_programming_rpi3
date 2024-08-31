@@ -1,15 +1,17 @@
 # enable uart in raspberr pi 3 B
 
 ## raspi-config
+~~~
 Select "Interface Option -> Serial", enable.
 Select "Interface Option -> Blutooth", disable
+~~~
 
 ## config.txt
-왜 그런지 모르겠는데, ssh로 raspberry pi에 연결해서
-boot/firmware/config.txt를 수정해줘야만 정상적으로 적용됬다.
-그냥 hdmi로 raspberry pi에 연결해도 될것 같다.
-sdcard를 PC에서 열어서 config.txt를 수정하면 제대로 반영이 안되는데,
-왜 그런지는 모르겠다.
+왜 그런지 모르겠는데, ssh로 raspberry pi에 연결해서  
+boot/firmware/config.txt를 수정해줘야만 정상적으로 적용됬다.  
+그냥 hdmi로 raspberry pi에 연결해도 될것 같다.  
+sdcard를 PC에서 열어서 config.txt를 수정하면 제대로 반영이 안되는데,  
+왜 그런지는 모르겠다.  
 ~~~bash
 [all]
 enable_uart=1
