@@ -14,8 +14,8 @@ set_env()
 
     # variables for mount and install module and kernel.
     export KERNEL_DIR=$TOP_DIR/linux
-    export BOOT_DIR=$TOP_DIR/mnt/fat32/firmware
-    export ROOTFS_DIR=$TOP_DIR/mnt/ext4
+    export BOOT_DIR=$TOP_DIR/mnt/boot
+    export ROOTFS_DIR=$TOP_DIR/mnt/root
 }
 
 get_kernel()
@@ -54,13 +54,13 @@ mount_dirs()
         echo "mount dir already here"
     else
         echo "create dirs for mount.."
-        mkdir -p $TOP_DIR/mnt/fat32
-        mkdir -p $TOP_DIR/mnt/ext4
+        mkdir -p ${BOOT_DIR}
+        mkdir -p ${ROOTFS_DIR}
     fi
 
     echo "mount dirs for boot, rootfs..."
-    sudo mount /dev/sda1 $TOP_DIR/mnt/fat32
-    sudo mount /dev/sda2 $TOP_DIR/mnt/ext4
+    sudo mount /dev/sda1 ${BOOT_DIR}
+    sudo mount /dev/sda2 ${ROOTFS_DIR}
 }
 
 install_modules()
@@ -69,28 +69,31 @@ install_modules()
     cd $KERNEL_DIR
     # sudo env PATH=$PATH make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- \
     #     INSTALL_MOD_PATH=$TOP_DIR/mnt/ext4 modules_install
+    #sudo env PATH=$PATH make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} \
+    #    INSTALL_MOD_PATH=$TOP_DIR/${ROOTFS_DIR} modules_install
     sudo env PATH=$PATH make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} \
-        INSTALL_MOD_PATH=$TOP_DIR/mnt/ext4 modules_install
+        INSTALL_MOD_PATH=mnt/root modules_install
 }
 
 
+# https://www.raspberrypi.com/documentation/computers/linux_kernel.html
 install_kernel()
 {
     echo "======= install_kernel() =========="
     cd $KERNEL_DIR
     sudo cp -vf $BOOT_DIR/$KERNEL.img $BOOT_DIR/$KERNEL-backup.img
     # sudo cp arch/${ARCH}/boot/zImage $BOOD_DIR/$KERNEL.img
-    sudo cp -vf arch/${ARCH}/boot/Image $BOOD_DIR/$KERNEL.img
-    sudo cp -vf arch/${ARCH}/boot/dts/broadcom/*.dtb $BOOT_DIR/
-    sudo cp -vf arch/${ARCH}/boot/dts/overlays/*.dtb* $BOOT_DIR/overlays/
-    sudo cp -vf arch/${ARCH}/boot/dts/overlays/README $BOOT_DIR/overlays/
+    sudo cp -vf arch/${ARCH}/boot/Image ${BOOT_DIR}/$KERNEL.img
+    sudo cp -vf arch/${ARCH}/boot/dts/broadcom/*.dtb ${BOOT_DIR}/
+    sudo cp -vf arch/${ARCH}/boot/dts/overlays/*.dtb* ${BOOT_DIR}/overlays/
+    sudo cp -vf arch/${ARCH}/boot/dts/overlays/README ${BOOT_DIR}/overlays/
     sudo umount $BOOT_DIR
     sudo umount $ROOTFS_DIR
 
     cd $TOP_DIR
 }
 
-#export TOP_DIR=`pwd`
+export TOP_DIR=`pwd`
 set_env
 
 get_kernel
